@@ -86,7 +86,7 @@ Stabilize the board. This will search through the board for any matches, remove 
 
 
 ### emthree.on_input(board, action)
-Pass user input to the board to detect interaction with the blocks. Only touch/click events with a state of `pressed` or `released` must be sent. When a block is selected through a click Emthree will send an `emthree.SELECT` message to the game object representing the block. When a block is deselected an `emthree.RESET` message is sent. Emthree will release input focus while processing input and acquire it again when the board is stable.
+Pass user input to the board to detect interaction with the blocks. Only touch/click events with a state of `pressed` or `released` must be sent. When a block is pressed through a click Emthree will send an `emthree.PRESSED` message to the game object representing the block. When a block is released an `emthree.RELEASED` message is sent. Emthree will release input focus while processing input and acquire it again when the board is stable.
 
 **PARAMETERS**
 * ```board``` (table) - The board to apply the input to
@@ -421,9 +421,9 @@ Message sent to the game object representing a block on the board when it is to 
 * ```type``` (any) - The type to change to
 
 
-### emthree.SELECT
-Message sent to the game object representing a block on the board when it is selected.
+### emthree.PRESSED
+Message sent to the game object representing a block on the board when it is pressed.
 
 
-### emthree.RESET
-Message sent to the game object representing a block on the board when it is deselected.
+### emthree.RELEASED
+Message sent to the game object representing a block on the board when it is released.

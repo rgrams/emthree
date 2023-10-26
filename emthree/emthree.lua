@@ -5,8 +5,8 @@ local utils = require "emthree.internal.utils"
 
 M.REMOVE = hash("emthree_remove")
 M.CHANGE = hash("emthree_change")
-M.SELECT = hash("emthree_select")
-M.RESET = hash("emthree_reset")
+M.PRESSED = hash("emthree_pressed")
+M.RELEASED = hash("emthree_released")
 
 
 M.COLLAPSE_DOWN = hash("emthree_slide_down")
@@ -1010,30 +1010,33 @@ function M.on_input(board, action)
 	assert(action.pressed or action.released, "You must provide either a pressed or released action")
 	local x, y = M.screen_to_slot(board, action.x, action.y)
 	local block = M.get_block(board, x, y)
-	if block and (block.blocker or block.spawner) then
+	if action.pressed and block and (block.blocker or block.spawner) then
+		-- Don't need presses but still want release events on blockers & spawners.
 		return
 	end
 
 	if action.pressed then
 		board.pressed_block = block
-		msg.post(block.id, M.SELECT)
+		msg.post(block.id, M.PRESSED)
 	else -- released
-		if board.pressed_block and block ~= board.pressed_block then
-			-- released on a different block than we pressed -> swap them
-			utils.corun(function()
-				msg.post(".", "release_input_focus")
-				local dx = math.abs(board.pressed_block.x - block.x)
-				local dy = math.abs(board.pressed_block.y - block.y)
-				if (dx == 1 and dy == 0) or (dy == 1 and dx == 0) then
-					swap_slots(board, board.pressed_block, block)
-				end
-				if not board.pressed_block.removed then msg.post(board.pressed_block.id, M.RESET) end
-				board.pressed_block = nil
-				msg.post(".", "acquire_input_focus")
-			end)
-			return true
-		elseif board.pressed_block then
-			msg.post(board.pressed_block.id, M.RESET)
+		if board.pressed_block then
+			msg.post(board.pressed_block.id, M.RELEASED)
+
+			if block and block ~= board.pressed_block then
+				-- Released somewhere on the board other than the pressed block -> swap them.
+				utils.corun(function()
+					msg.post(".", "release_input_focus")
+					local dx = utils.clamp(board.pressed_block.x - x, -1, 1)
+					local dy = utils.clamp(board.pressed_block.y - y, -1, 1)
+					block = M.get_block(board, board.pressed_block.x - dx, board.pressed_block.y - dy)
+					if (dx == 0 or dy == 0) and block and not block.blocker then
+						swap_slots(board, board.pressed_block, block)
+					end
+					board.pressed_block = nil
+					msg.post(".", "acquire_input_focus")
+				end)
+				return true
+			end
 		end
 	end
 end

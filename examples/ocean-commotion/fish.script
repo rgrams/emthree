@@ -108,7 +108,7 @@ function on_message(self, message_id, message, sender)
 		local t = (math.random() * 2) + 2
 		go.cancel_animations(".", "euler.z")
 		go.animate(".", "euler.z", go.PLAYBACK_LOOP_PINGPONG, rot + 1, go.EASING_INOUTQUAD, t)
-	elseif message_id == emthree.SELECT then
+	elseif message_id == emthree.PRESSED then
 		--
 		-- Play a simple effect used to signal that we are
 		-- interacting with the fish.
@@ -118,7 +118,7 @@ function on_message(self, message_id, message, sender)
 		local r = math.random() / 50
 		go.cancel_animations(".", "euler.z")
 		go.animate(".", "euler.z", go.PLAYBACK_LOOP_PINGPONG, rot - 4, go.EASING_INOUTSINE, 0.1 + r)
-	elseif message_id == emthree.RESET then
+	elseif message_id == emthree.RELEASED then
 		--
 		-- Reset the fish, meaning that we stop animation and
 		-- go back to normal scaling.
