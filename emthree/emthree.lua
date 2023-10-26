@@ -61,10 +61,11 @@ local function horisontal_neighbors(board, x, y)
 	end
 
 	local color = board.slots[x][y].color
+
 	--
-	-- Search from slot left to the edge
+	-- Search from slot right to the edge
 	--
-	for i = x - 1, 0, -1 do
+	for i = x + 1, board.width - 1 do
 		local block = board.slots[i][y]
 		if block and block.color == color then
 			table.insert(neighbors, block)
@@ -77,9 +78,9 @@ local function horisontal_neighbors(board, x, y)
 	end
 
 	--
-	-- Search from slot right to the edge
+	-- Search from slot left to the edge
 	--
-	for i = x + 1, board.width - 1 do
+	for i = x - 1, 0, -1 do
 		local block = board.slots[i][y]
 		if block and block.color == color then
 			table.insert(neighbors, block)
@@ -678,7 +679,7 @@ end
 -- @param block The block to remove
 -- @param no_trigger True if the on_block_removed function
 -- should NOT be called (defaults to true)
-function M.remove_block(board, block, no_trigger)
+function M.remove_block(board, block, no_trigger, no_delay)
 	assert(board, "You must provide a board")
 
 	if not block then
@@ -701,10 +702,12 @@ function M.remove_block(board, block, no_trigger)
 
 	if not no_trigger then
 		local t = board.on_block_removed(board, block)
-		local duration = t or board.config.remove_duration
-		async(function(done)
-			timer.delay(duration, false, done)
-		end)
+		if not no_delay then
+			local duration = t or board.config.remove_duration
+			async(function(done)
+				timer.delay(duration, false, done)
+			end)
+		end
 	end
 end
 
@@ -713,11 +716,17 @@ end
 -- Remove a list of blocks from the board
 -- @param board
 -- @param blocks
-function M.remove_blocks(board, blocks)
+function M.remove_blocks(board, blocks, duration)
 	assert(board, "You must provide a board")
 	assert(blocks, "You must provide a list of blocks")
+	local skip_individual_delay = duration
 	for _,block in pairs(blocks) do
-		M.remove_block(board, block)
+		M.remove_block(board, block, nil, skip_individual_delay)
+	end
+	if duration then
+		async(function(done)
+			timer.delay(duration, false, done)
+		end)
 	end
 end
 
