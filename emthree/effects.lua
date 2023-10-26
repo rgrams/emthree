@@ -74,7 +74,7 @@ function M.remove_all(board)
 	local blocks = emthree.get_blocks(board)
 	while #blocks > 0 do
 		local b = table.remove(blocks, math.random(1, #blocks))
-		if emthree.is_block(board, b.x, b.y) then 
+		if emthree.is_block(board, b.x, b.y) then
 			emthree.remove_block(board, b)
 		end
 	end

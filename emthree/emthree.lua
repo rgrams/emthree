@@ -334,7 +334,7 @@ local function slide(board, callback)
 				blocks[x][y] = nil
 				block.x = tox
 				block.y = toy
-				
+
 				-- slide diagonal
 				local to = vmath.vector3((block_size / 2) + (block_size * tox), (block_size / 2) + (block_size * toy), 0)
 				go.animate(block.id, "position", go.PLAYBACK_ONCE_FORWARD, to, board.config.slide_easing, duration)
@@ -441,7 +441,7 @@ function M.create_board(width, height, block_size, config)
 	config.collapse_direction = config.collapse_direction or M.COLLAPSE_DOWN
 	config.collapse_easing = config.collapse_easing or go.EASING_OUTBOUNCE
 	config.slide_easing = config.slide_easing or go.EASING_LINEAR
-	
+
 	local board = {
 		width = width,
 		height = height,
@@ -797,7 +797,7 @@ end
 --
 local function find_empty_slots(board)
 	assert(board, "You must provide a board")
-	local slots = {}	
+	local slots = {}
 	for x = 0, board.width - 1 do
 		for y = 0, board.height - 1 do
 			if not board.slots[x][y] then
@@ -851,7 +851,7 @@ local function trigger_spawners(board, callback)
 			local fromslot_y = spawner.y
 			local from_x, from_y = M.slot_to_screen(board, spawner.x, spawner.y)
 			local from = vmath.vector3(from_x, from_y, 0)
-			
+
 			for i=1,distance do
 				local toslot_x = spawner.x + direction.x * i
 				local toslot_y = spawner.y + direction.y * i
@@ -905,7 +905,7 @@ local function has_possible_switches(board)
 			local down = board.slots[x][y - 1]
 			local left = board.slots[x - 1][y]
 			local right = board.slots[x + 1][y]
-			
+
 			if swap_and_check_match(board, slot, up) then return true end
 			if swap_and_check_match(board, slot, down) then return true end
 			if swap_and_check_match(board, slot, left) then return true end
@@ -933,7 +933,7 @@ function M.stabilize(board, callback)
 			local did_collapse = async(function(done) collapse(board, done) end)
 			local did_spawn = async(function(done) trigger_spawners(board, done) end)
 			local did_slide = async(function(done) slide(board, done) end)
-						
+
 			if not did_spawn and not did_collapse and not did_slide then
 				board.on_stabilized(board)
 				if not has_possible_switches(board) then
