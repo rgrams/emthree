@@ -1008,67 +1008,25 @@ function M.on_input(board, action)
 	end
 
 	if action.pressed then
-		if not board.mark_1 then
-			board.mark_1 = block
-		else
-			board.mark_2 = block
-		end
-		return block ~= nil
-	else
-
-		if board.mark_1 and board.mark_1 == board.mark_2 then
-			-- second click, released on the first block again -> deselect it
-			msg.post(board.mark_1.id, M.RESET)
-			board.mark_1 = nil
-			board.mark_2 = nil
-			return true
-
-		elseif board.mark_1 and board.mark_1 == block then
-			-- first click, released on the first block -> select it
-			msg.post(board.mark_1.id, M.SELECT)
-			return true
-
-		elseif board.mark_2 and board.mark_2 == block then
-			-- second click, released on the second block -> swap them
+		board.pressed_block = block
+		msg.post(block.id, M.SELECT)
+	else -- released
+		if board.pressed_block and block ~= board.pressed_block then
+			-- released on a different block than we pressed -> swap them
 			utils.corun(function()
 				msg.post(".", "release_input_focus")
-				local dx = math.abs(board.mark_1.x - board.mark_2.x)
-				local dy = math.abs(board.mark_1.y - board.mark_2.y)
+				local dx = math.abs(board.pressed_block.x - block.x)
+				local dy = math.abs(board.pressed_block.y - block.y)
 				if (dx == 1 and dy == 0) or (dy == 1 and dx == 0) then
-					swap_slots(board, board.mark_1, board.mark_2)
+					swap_slots(board, board.pressed_block, block)
 				end
-				if not board.mark_1.removed then msg.post(board.mark_1.id, M.RESET) end
-				board.mark_1 = nil
-				board.mark_2 = nil
+				if not board.pressed_block.removed then msg.post(board.pressed_block.id, M.RESET) end
+				board.pressed_block = nil
 				msg.post(".", "acquire_input_focus")
 			end)
 			return true
-
-		elseif board.mark_1 and not board.mark_2 then
-			-- one block selected, released on some other block -> swipe and swap
-			utils.corun(function()
-				msg.post(".", "release_input_focus")
-				local dx = utils.clamp(board.mark_1.x - x, -1, 1)
-				local dy = utils.clamp(board.mark_1.y - y, -1, 1)
-				block = M.get_block(board, board.mark_1.x - dx, board.mark_1.y - dy)
-				if (dx == 0 or dy == 0) and block and not block.blocker then
-					swap_slots(board, board.mark_1, block)
-				end
-				if not board.mark_1.removed then msg.post(board.mark_1.id, M.RESET) end
-				board.mark_1 = nil
-				msg.post(".", "acquire_input_focus")
-			end)
-			return true
-
-		else
-			if board.mark_1 then
-				msg.post(board.mark_1.id, M.RESET)
-				board.mark_1 = nil
-			end
-			if board.mark_2 then
-				msg.post(board.mark_2.id, M.RESET)
-				board.mark_2 = nil
-			end
+		elseif board.pressed_block then
+			msg.post(board.pressed_block.id, M.RESET)
 		end
 	end
 end
