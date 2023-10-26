@@ -700,7 +700,11 @@ function M.remove_block(board, block, no_trigger)
 	board.slots[block.x][block.y] = nil
 
 	if not no_trigger then
-		board.on_block_removed(board, block)
+		local t = board.on_block_removed(board, block)
+		local duration = t or board.config.remove_duration
+		async(function(done)
+			timer.delay(duration, false, done)
+		end)
 	end
 end
 

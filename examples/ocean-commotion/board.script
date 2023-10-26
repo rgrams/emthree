@@ -211,7 +211,7 @@ end
 -- INIT the board
 --
 function init(self)
-	self.board = emthree.create_board(boardwidth, boardheight, blocksize)
+	self.board = emthree.create_board(boardwidth, boardheight, blocksize, { remove_duration = 0.25 })
 	emthree.on_create_block(self.board, create_block)
 	emthree.on_create_blocker(self.board, create_blocker)
 	emthree.on_match(self.board, on_match)
