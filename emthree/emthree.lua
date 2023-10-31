@@ -736,14 +736,18 @@ end
 -- Use this when converting blocks into other types due
 -- to a match of some kind
 -- Will clear list of neighbors
-function M.change_block(block, type, color)
+function M.change_block(board, block, type, color)
+	assert(board, "You must provide a board")
 	assert(block, "You must provide a block")
 	assert(type or color, "You must provide type and/or color")
 	if block.removed then
 		return
 	end
-	block.color = color or block.color
+	if board.on_change_block then
+		type, color = board.on_change_block(board, block, type, color)
+	end
 	block.type = type or block.type
+	block.color = color or block.color
 	block.vertical_neighbors = {}
 	block.horisontal_neighbors = {}
 	msg.post(block.id, M.CHANGE, { color = block.color, type = block.type, position = go.get_position(block.id) })
@@ -1164,6 +1168,12 @@ function M.on_create_block(board, fn)
 	board.on_create_block = fn
 end
 
+-- The function to call when a block is changed
+function M.on_change_block(board, fn)
+	assert(board, "You must provide a board")
+	assert(fn, "You must provide a function")
+	board.on_change_block = fn
+end
 
 -- The function to call when a blocker should be created
 function M.on_create_blocker(board, fn)

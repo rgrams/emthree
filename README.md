@@ -207,10 +207,11 @@ Remove a list of blocks. Will repeatedly call `emthree.remove_block()`.
 * ```blocks``` (table) - The blocks to remove
 
 
-### emthree.change_block(block, type, color)
-Change a block on the board from one type and color to another. This will post an `emthree.CHANGE` message to the game object representing the block.
+### emthree.change_block(board, block, type, color)
+Change a block on the board from one type and color to another. This will call the function passed to `emthree.on_change_block()` and then post an `emthree.CHANGE` message to the game object representing the block.
 
 **PARAMETERS**
+* ```board``` (table) - The board to change the block on
 * ```block``` (table) - The block to change
 * ```type``` (any) - The type to change to
 * ```color``` (any) - The color to change to
@@ -345,6 +346,26 @@ The function must accept the following arguments:
 * ```block``` (table) - A block that is part of the match
 * ```horisontal_neighbors``` (table) - A list of horizontal neighboring blocks that are part of the match
 * ```vertical_neighbors``` (table) - A list of vertical neighboring blocks that are part of the match
+
+
+### emthree.on_change_block(board, fn)
+Set a function to be called whenever a block is changed. The function must return the type and color of the block. Like `on_create_block`, you can use this function to change the properties of the block.
+
+**PARAMETERS**
+* ```board``` (table) - The board that will notify when a block is changed
+* ```fn``` (function) - The function to call when a block is changed
+
+The function must accept and return the following:
+
+**PARAMETERS**
+* ```board``` (table) - The board where the block is
+* ```block``` (table) - The block to change
+* ```type``` (any) - The block type, can be nil
+* ```color``` (any) - The color of the block
+
+**RETURN**
+* ```type``` (any) - The block type
+* ```color``` (any) - The color of the block
 
 
 ### emthree.on_block_removed(board, fn)
