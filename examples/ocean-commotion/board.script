@@ -48,7 +48,7 @@ local function create_block(board, position, type, color)
 	end
 	local id = factory.create("#fish_factory", position, null, { color = color, type = type })
 	msg.post(id, "set_parent", { parent_id = go.get_id(), keep_world_transform = 0 })
-	return id, color, type
+	return id, type, color
 end
 
 local function create_blocker(board, position, type)

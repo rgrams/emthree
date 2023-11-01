@@ -27,7 +27,7 @@ local function create_block(board, position, type, color)
 	end
 	local id = factory.create("#factory", position, null, { color = color, type = type })
 	msg.post(id, "set_parent", { parent_id = go.get_id(), keep_world_transform = 0 })
-	return id, color, type
+	return id, type, color
 end
 
 local function create_spawner(board, position, type)
@@ -50,7 +50,7 @@ function init(self)
 	emthree.on_create_spawner(self.board, create_spawner)
 	emthree.on_create_blocker(self.board, create_blocker)
 	emthree.on_no_possible_switches(self.board, function() emthree.shuffle(self.board) end)
-	
+
 	for x=0,boardwidth-1 do
 		emthree.create_spawner(self.board, x, boardheight - 1, hash("SPAWNER"))
 	end

@@ -776,8 +776,8 @@ function M.create_block(board, x, y, type, color)
 	assert(not board.slots[x][y], "The position is not empty")
 
 	local sx, sy = M.slot_to_screen(board, x, y)
-	local id, color, type = board.on_create_block(board, vmath.vector3(sx, sy, 0), type, color)
-	board.slots[x][y] = { id = id, x = x, y = y, color = color, type = type, block = true }
+	local id, type, color = board.on_create_block(board, vmath.vector3(sx, sy, 0), type, color)
+	board.slots[x][y] = { id = id, x = x, y = y, type = type, color = color, block = true }
 	return board.slots[x][y]
 end
 
