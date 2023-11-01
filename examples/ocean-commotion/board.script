@@ -63,22 +63,22 @@ local function on_match(board, block, horisontal_neighbors, vertical_neighbors)
 	if #horisontal_neighbors >= 2 and #vertical_neighbors >= 2 then
 		emthree.remove_blocks(board, horisontal_neighbors)
 		emthree.remove_blocks(board, vertical_neighbors)
-		emthree.change_block(block, block_type.WRAPPED, block.color)
+		emthree.change_block(board, block, block_type.WRAPPED, block.color)
 	elseif #horisontal_neighbors >= 4 then
 		emthree.remove_blocks(board, horisontal_neighbors)
-		emthree.change_block(block, block_type.BOMB, nil)
+		emthree.change_block(board, block, block_type.BOMB, nil)
 	elseif #horisontal_neighbors == 3 then
 		emthree.remove_blocks(board, horisontal_neighbors)
-		emthree.change_block(block, block_type.STRIPED_V, block.color)
+		emthree.change_block(board, block, block_type.STRIPED_V, block.color)
 	elseif #horisontal_neighbors == 2 then
 		emthree.remove_block(board, block)
 		emthree.remove_blocks(board, horisontal_neighbors)
 	elseif #vertical_neighbors >= 4 then
 		emthree.remove_blocks(board, vertical_neighbors)
-		emthree.change_block(block, block_type.BOMB, nil)
+		emthree.change_block(board, block, block_type.BOMB, nil)
 	elseif #vertical_neighbors == 3 then
 		emthree.remove_blocks(board, vertical_neighbors)
-		emthree.change_block(block, block_type.STRIPED_H, block.color)
+		emthree.change_block(board, block, block_type.STRIPED_H, block.color)
 	elseif #vertical_neighbors == 2 then
 		emthree.remove_block(board, block)
 		emthree.remove_blocks(board, vertical_neighbors)
@@ -106,8 +106,8 @@ local function on_swap(board, block1, block2)
 		effects.remove_all(board)
 		return true
 	elseif (is_striped_vertical(block1) and is_striped_vertical(block2)) or (is_striped_horizontal(block1) and is_striped_horizontal(block2)) then
-		emthree.change_block(block1, block_type.STRIPED_H, block1.color)
-		emthree.change_block(block2, block_type.STRIPED_V, block2.color)
+		emthree.change_block(board, block1, block_type.STRIPED_H, block1.color)
+		emthree.change_block(board, block2, block_type.STRIPED_V, block2.color)
 		emthree.remove_block(board, block1)
 		emthree.remove_block(board, block2)
 		return true
@@ -145,7 +145,7 @@ local function change_block(type, color)
 		local x, y = emthree.screen_to_slot(board, action.x, action.y)
 		local block = emthree.get_block(board, x, y)
 		if block then
-			emthree.change_block(block, type or block.type, color or block.color)
+			emthree.change_block(board, block, type or block.type, color or block.color)
 		end
 	end
 end
@@ -175,7 +175,7 @@ local function debug_board(board)
 		"1B2114" ..
 		"524226" ..
 		"2446H5"
-		
+
 	for y=0,boardheight-2 do
 		for x=0,boardwidth-1 do
 			local i = 1 + ((boardheight - 2 - y) * boardwidth) + x
