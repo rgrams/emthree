@@ -207,7 +207,7 @@ Remove a list of blocks. Will repeatedly call `emthree.remove_block()`.
 * ```blocks``` (table) - The blocks to remove
 
 
-### emthree.change_block(board, block, type, color)
+### emthree.change_block(board, block, type, color, effect)
 Change a block on the board from one type and color to another. This will call the function passed to `emthree.on_change_block()` and then post an `emthree.CHANGE` message to the game object representing the block.
 
 **PARAMETERS**
@@ -215,9 +215,10 @@ Change a block on the board from one type and color to another. This will call t
 * ```block``` (table) - The block to change
 * ```type``` (any) - The type to change to
 * ```color``` (any) - The color to change to
+* ```effect``` (any) - The effect to change to
 
 
-### emthree.create_block(board, x, y, type, color)
+### emthree.create_block(board, x, y, type, color, effect)
 Create a new block on the board. This will call the function passed to `emthree.on_create_block()`.
 
 **PARAMETERS**
@@ -226,6 +227,7 @@ Create a new block on the board. This will call the function passed to `emthree.
 * ```y``` (number) - The vertical slot position of the block
 * ```type``` (any) - The type of the block
 * ```color``` (any) - The color of the block
+* ```effect``` (any) - The effect of the block
 
 **RETURN**
 * ```block``` (table) - The created block
@@ -287,11 +289,13 @@ The function must accept and return the following:
 * ```position``` (vector3) - Position of the block to create
 * ```type``` (any) - The block type, can be nil
 * ```color``` (any) - The color of the block
+* ```effect``` (any) - The effect of the block
 
 **RETURN**
 * ```id``` (hash) - Id of the created game object
 * ```type``` (any) - Type of the created block
 * ```color``` (any) - Color of the created block
+* ```effect``` (any) - Effect of the created block
 
 
 ### emthree.on_create_blocker(board, fn)
@@ -379,10 +383,12 @@ The function must accept and return the following:
 * ```block``` (table) - The block to change
 * ```type``` (any) - The block type, can be nil
 * ```color``` (any) - The color of the block
+* ```effect``` (any) - The effect of the block
 
 **RETURN**
 * ```type``` (any) - The block type
 * ```color``` (any) - The color of the block
+* ```effect``` (any) - The effect of the block
 
 
 ### emthree.on_block_removed(board, fn)
@@ -457,6 +463,7 @@ Message sent to the game object representing a block on the board when it is to 
 **PARAMETERS**
 * ```color``` (any) - The color to change to
 * ```type``` (any) - The type to change to
+* ```effect``` (any) - The effect to change to
 
 
 ### emthree.PRESSED

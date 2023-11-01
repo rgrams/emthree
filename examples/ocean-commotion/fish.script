@@ -100,7 +100,6 @@ function on_message(self, message_id, message, sender)
 	if message_id == emthree.CHANGE then
 		self.color = message.color or block_color.YELLOW
 		self.type = message.type or block_type.PLAIN
-		go.set_position(message.position)
 		update_sprites(self)
 	elseif message_id == hash("sway") then
 		local rot = go.get(".", "euler.z")

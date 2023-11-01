@@ -744,21 +744,22 @@ end
 -- Use this when converting blocks into other types due
 -- to a match of some kind
 -- Will clear list of neighbors
-function M.change_block(board, block, type, color)
+function M.change_block(board, block, type, color, effect)
 	assert(board, "You must provide a board")
 	assert(block, "You must provide a block")
-	assert(type or color, "You must provide type and/or color")
+	assert(type or color or effect, "You must provide at least one type, color, or effect parameter")
 	if block.removed then
 		return
 	end
 	if board.on_change_block then
-		type, color = board.on_change_block(board, block, type, color)
+		type, color, effect = board.on_change_block(board, block, type, color, effect)
 	end
 	block.type = type or block.type
 	block.color = color or block.color
+	block.effect = effect or block.effect
 	block.vertical_neighbors = {}
 	block.horisontal_neighbors = {}
-	msg.post(block.id, M.CHANGE, { color = block.color, type = block.type, position = go.get_position(block.id) })
+	msg.post(block.id, M.CHANGE, { type = type, color = color, effect = effect })
 end
 
 
@@ -770,14 +771,15 @@ end
 -- @param type
 -- @param color
 -- @return The created block
-function M.create_block(board, x, y, type, color)
+function M.create_block(board, x, y, type, color, effect)
 	assert(board, "You must provide a board")
 	assert(x and y, "You must provide a position")
 	assert(not board.slots[x][y], "The position is not empty")
 
 	local sx, sy = M.slot_to_screen(board, x, y)
-	local id, type, color = board.on_create_block(board, vmath.vector3(sx, sy, 0), type, color)
-	board.slots[x][y] = { id = id, x = x, y = y, type = type, color = color, block = true }
+	local pos = vmath.vector3(sx, sy, 0)
+	local id, type, color, effect = board.on_create_block(board, pos, type, color, effect)
+	board.slots[x][y] = { id = id, x = x, y = y, type = type, color = color, effect = effect, block = true }
 	return board.slots[x][y]
 end
 
