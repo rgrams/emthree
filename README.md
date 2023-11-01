@@ -332,6 +332,23 @@ The function must accept and return the following:
 * ```type``` (any) - Type of the created spawner
 
 
+### emthree.is_match(board, fn)
+Set a custom function to determine if a block matches a color. The default implementation just checks `if block.color == color`.
+
+**PARAMETERS**
+* ```board``` (table) - The board that the block is on
+* ```fn``` (function) - The function to call to check if the block matches
+
+The function must accept and return the following arguments:
+
+**PARAMETERS**
+* ```block``` (table) - The block to check
+* ```color``` (any) - The color of the block that we are finding matches for
+
+**RETURN**
+* ```does_match``` (boolean) - True if the block is a valid match
+
+
 ### emthree.on_match(board, fn)
 Set a function to be called whenever a match on the board is detected. Use this callback to remove the blocks involved in the match and optionally also create new blocks based on the match. The default implementation will remove the blocks and do nothing else.
 

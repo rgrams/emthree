@@ -49,6 +49,10 @@ local function delay(seconds, fn, a)
 	end)
 end
 
+local function is_match(block, color)
+	return block.color == color
+end
+
 --
 -- Returns a list of neighbor slots of the same color as
 -- the one on x, y. Horizontally.
@@ -56,18 +60,20 @@ end
 local function horisontal_neighbors(board, x, y)
 	assert(board, "You must provide a board")
 	local neighbors = {}
-	if not board.slots[x][y] or not board.slots[x][y].color then
+	local from_block = board.slots[x][y]
+	if not from_block or not from_block.color then
 		return neighbors
 	end
 
-	local color = board.slots[x][y].color
+	local color = from_block.color
+	local is_match = board.is_match or is_match
 
 	--
 	-- Search from slot right to the edge
 	--
 	for i = x + 1, board.width - 1 do
 		local block = board.slots[i][y]
-		if block and block.color == color then
+		if block and is_match(block, color) then
 			table.insert(neighbors, block)
 		else
 			--
@@ -82,7 +88,7 @@ local function horisontal_neighbors(board, x, y)
 	--
 	for i = x - 1, 0, -1 do
 		local block = board.slots[i][y]
-		if block and block.color == color then
+		if block and is_match(block, color) then
 			table.insert(neighbors, block)
 		else
 			--
@@ -101,19 +107,21 @@ end
 local function vertical_neighbors(board, x, y)
 	assert(board, "You must provide a board")
 	local neighbors = {}
-	if not board.slots[x][y] or not board.slots[x][y].color then
+	local from_block = board.slots[x][y]
+	if not from_block or not from_block.color then
 		return neighbors
 	end
 
-	local color = board.slots[x][y].color
+	local color = from_block.color
+	local is_match = board.is_match or is_match
 
 	--
 	-- Search from slot down to the edge
 	--
 	for i = y - 1, 0, -1 do
-		local slot = board.slots[x][i]
-		if slot and slot.color == color then
-			table.insert(neighbors, slot)
+		local block = board.slots[x][i]
+		if block and is_match(block, color) then
+			table.insert(neighbors, block)
 		else
 			--
 			-- Break the search as soon as we hit something of a different type
@@ -126,9 +134,9 @@ local function vertical_neighbors(board, x, y)
 	-- Search from slot up to the edge
 	--
 	for i = y + 1, board.height - 1 do
-		local slot = board.slots[x][i]
-		if slot and slot.color == color then
-			table.insert(neighbors, slot)
+		local block = board.slots[x][i]
+		if block and is_match(block, color) then
+			table.insert(neighbors, block)
 		else
 			--
 			-- Break the search as soon as we hit something of a different color
@@ -1128,6 +1136,13 @@ function M.dump(board)
 	return s
 end
 
+
+--- Set a function to be called to determine whether a block matches a color.
+function M.is_match(board, fn)
+	assert(board, "You must provide a board")
+	assert(fn, "You must provide a function")
+	board.is_match = fn
+end
 
 --- Set a function to be called when a match is detected on the board
 function M.on_match(board, fn)
