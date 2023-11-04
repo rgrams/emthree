@@ -49,7 +49,7 @@ local function delay(seconds, fn, a)
 	end)
 end
 
-local function is_match(block, color)
+local function is_match(block, color, from_block)
 	return block.color == color
 end
 
@@ -73,7 +73,7 @@ local function horisontal_neighbors(board, x, y)
 	--
 	for i = x + 1, board.width - 1 do
 		local block = board.slots[i][y]
-		if block and is_match(block, color) then
+		if block and is_match(block, color, from_block) then
 			table.insert(neighbors, block)
 		else
 			--
@@ -88,7 +88,7 @@ local function horisontal_neighbors(board, x, y)
 	--
 	for i = x - 1, 0, -1 do
 		local block = board.slots[i][y]
-		if block and is_match(block, color) then
+		if block and is_match(block, color, from_block) then
 			table.insert(neighbors, block)
 		else
 			--
@@ -120,7 +120,7 @@ local function vertical_neighbors(board, x, y)
 	--
 	for i = y - 1, 0, -1 do
 		local block = board.slots[x][i]
-		if block and is_match(block, color) then
+		if block and is_match(block, color, from_block) then
 			table.insert(neighbors, block)
 		else
 			--
@@ -135,7 +135,7 @@ local function vertical_neighbors(board, x, y)
 	--
 	for i = y + 1, board.height - 1 do
 		local block = board.slots[x][i]
-		if block and is_match(block, color) then
+		if block and is_match(block, color, from_block) then
 			table.insert(neighbors, block)
 		else
 			--
