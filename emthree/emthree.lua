@@ -1040,7 +1040,9 @@ function M.on_input(board, action)
 
 	if action.pressed then
 		board.pressed_block = block
-		msg.post(block.id, M.PRESSED)
+		if block and block.id then
+			msg.post(block.id, M.PRESSED)
+		end
 	else -- released
 		if board.pressed_block then
 			msg.post(board.pressed_block.id, M.RELEASED)
