@@ -936,14 +936,15 @@ local function has_possible_switches(board)
 			local left = board.slots[x - 1][y]
 			local right = board.slots[x + 1][y]
 
-			if swap_and_check_match(board, slot, up) then return true end
-			if swap_and_check_match(board, slot, down) then return true end
-			if swap_and_check_match(board, slot, left) then return true end
-			if swap_and_check_match(board, slot, right) then return true end
+			if swap_and_check_match(board, slot, up) then return slot, up end
+			if swap_and_check_match(board, slot, down) then return slot, down end
+			if swap_and_check_match(board, slot, left) then return slot, left end
+			if swap_and_check_match(board, slot, right) then return slot, right end
 		end
 	end
 	return false
 end
+M.has_possible_switches = has_possible_switches
 
 
 --- Stabilize the board
