@@ -1080,7 +1080,7 @@ function M.screen_to_slot(board, x, y)
 	local scale = go.get_world_scale()
 	local x = math.floor((x - pos.x) / (board.block_size * scale.x))
 	local y = math.floor((y - pos.y) / (board.block_size * scale.y))
-	return x, y
+	return x, y, 0
 end
 
 
@@ -1095,7 +1095,7 @@ function M.slot_to_screen(board, x, y)
 	assert(x and y, "You must provide a position")
 	local x = (board.block_size / 2) + (board.block_size * x)
 	local y = (board.block_size / 2) + (board.block_size * y)
-	return x, y
+	return x, y, 0
 end
 
 
