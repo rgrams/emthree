@@ -983,6 +983,111 @@ function M.stabilize(board, callback)
 	end
 end
 
+local function get_shufflable_blocks(board)
+	local blocks = {}
+	local i = 0
+	for x = 0, board.width - 1 do
+		for y = 0, board.height - 1 do
+			local block = board.slots[x][y]
+			if block and block.block then
+				i = i + 1
+				blocks[i] = block
+			end
+		end
+	end
+	return blocks, i
+end
+
+local function shuffle_list(list)
+	for i = #list, 2, -1 do
+		local j = math.random(i)
+		list[i], list[j] = list[j], list[i]
+	end
+end
+
+local function current_match_exists(board, blocks)
+	for i,block in ipairs(blocks) do
+		local hn = horisontal_neighbors(board, block.x, block.y)
+		if #hn >= 2 then
+			return true
+		end
+		local vn = vertical_neighbors(board, block.x, block.y)
+		if #vn >= 2 then
+			return true
+		end
+	end
+end
+
+local function simulation_block(block)
+	local b = {}
+	for k,v in pairs(block) do
+		b[k] = v
+	end
+	b.original_block = block
+	return b
+end
+
+local function make_simulation_copy(board)
+	local out = {}
+	-- NOTE: we need the board.is_match function!
+	for k,v in pairs(board) do
+		out[k] = v
+	end
+	local slots = {}
+	for x = 0, board.width - 1 do
+		slots[x] = {}
+		for y = 0, board.height - 1 do
+			slots[x][y] = simulation_block(board.slots[x][y]) -- Duplicate block with reference to original block.
+		end
+	end
+	out.slots = slots
+	return out
+end
+
+-- Shuffle board without making automatic matches happen.
+function M.smart_shuffle(board, callback)
+	assert(board, "You must provide a board")
+	assert(coroutine.running())
+
+	-- Make a duplicate board for testing the final shuffle positions.
+	local sim_board = make_simulation_copy(board)
+	local blocks, count = get_shufflable_blocks(sim_board)
+	-- make sure there is an even number of blocks
+	if count % 2 == 1 then
+		blocks[count] = nil
+	end
+	local iter = 0
+	while iter <= 30 do
+		iter = iter + 1
+		-- Repeatedly shuffle until there are -possible- matches but not -current- matches.
+		shuffle_list(blocks)
+		for i=2,#blocks,2 do
+			local b1, b2 = blocks[i-1], blocks[i]
+			sim_board.slots[b1.x][b1.y], sim_board.slots[b2.x][b2.y] = b2, b1
+			b1.x, b1.y, b2.x, b2.y = b2.x, b2.y, b1.x, b1.y
+		end
+		local there_is_a_match = current_match_exists(sim_board, blocks)
+		if not there_is_a_match then
+			local b1, b2 = has_possible_switches(sim_board)
+			if b1 and b2 then
+				break
+			end
+		end
+	end
+	-- Actually swap the real blocks.
+	local duration = board.config.swap_duration
+	for i,sim_block in ipairs(blocks) do
+		local block = sim_block.original_block
+		block.x, block.y = sim_block.x, sim_block.y
+		board.slots[block.x][block.y] = block
+		local pos = vmath.vector3(M.slot_to_screen(board, block.x, block.y))
+		go.cancel_animations(block.id, "position")
+		go.animate(block.id, "position", go.PLAYBACK_ONCE_FORWARD, pos, go.EASING_INOUTSINE, duration)
+	end
+	async(function(done) timer.delay(duration, false, done) end)
+	if callback then  callback()  end
+end
+
 
 function M.shuffle(board, callback)
 	assert(board, "You must provide a board")
