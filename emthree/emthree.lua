@@ -1045,9 +1045,11 @@ local function make_simulation_copy(board)
 end
 
 -- Shuffle board without making automatic matches happen.
-function M.smart_shuffle(board, callback)
+function M.smart_shuffle(board, doInstantly, callback)
 	assert(board, "You must provide a board")
-	assert(coroutine.running())
+	if not doInstantly then
+		assert(coroutine.running())
+	end
 
 	-- Make a duplicate board for testing the final shuffle positions.
 	local sim_board = make_simulation_copy(board)
@@ -1082,9 +1084,15 @@ function M.smart_shuffle(board, callback)
 		board.slots[block.x][block.y] = block
 		local pos = vmath.vector3(M.slot_to_screen(board, block.x, block.y))
 		go.cancel_animations(block.id, "position")
-		go.animate(block.id, "position", go.PLAYBACK_ONCE_FORWARD, pos, go.EASING_INOUTSINE, duration)
+		if doInstantly then
+			go.set_position(pos, block.id)
+		else
+			go.animate(block.id, "position", go.PLAYBACK_ONCE_FORWARD, pos, go.EASING_INOUTSINE, duration)
+		end
 	end
-	async(function(done) timer.delay(duration, false, done) end)
+	if not doInstantly then
+		async(function(done) timer.delay(duration, false, done) end)
+	end
 	if callback then  callback()  end
 end
 
